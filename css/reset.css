@@ -1,0 +1,51 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body,
+h1, h2, h3, h4,
+p, ul, ol, dl, dd,
+figure, fieldset {
+    margin: 0;
+}
+
+ul[class],
+ol[class] {
+    list-style: none;
+    padding: 0;
+}
+
+img,
+svg,
+iframe {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+fieldset {
+    border: 0;
+    padding: 0;
+}
+
+[hidden] {
+    display: none !important;
+}

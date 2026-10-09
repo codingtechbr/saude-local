@@ -1,0 +1,70 @@
+rules_version = '2';
+
+// Regras do Firebase Storage - documentos médicos NUNCA são públicos.
+// O perfil do usuário é lido do Firestore (users/{uid}).
+// No primeiro deploy o Firebase pede permissão para o Storage consultar o Firestore: aceite.
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profilePath() {
+      return /databases/(default)/documents/users/$(request.auth.uid);
+    }
+
+    function profile() {
+      return firestore.get(profilePath()).data;
+    }
+
+    function staffRoles() {
+      return ['ATTENDANT', 'REGULATOR', 'MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+    }
+
+    // Perfil gravado no token pela Cloud Function syncStaffClaims (não depende do Firestore).
+    function isStaffByToken(municipalityId) {
+      return signedIn()
+        && request.auth.token.role in staffRoles()
+        && (request.auth.token.municipalityId == municipalityId || request.auth.token.role == 'SUPER_ADMIN');
+    }
+
+    // Reserva: consulta o Firestore (exige a integração Storage<->Firestore ativa no projeto).
+    function isStaffByFirestore(municipalityId) {
+      return signedIn()
+        && firestore.exists(profilePath())
+        && profile().active == true
+        && profile().role in staffRoles()
+        && (profile().municipalityId == municipalityId || profile().role == 'SUPER_ADMIN');
+    }
+
+    function isStaffOf(municipalityId) {
+      return isStaffByToken(municipalityId) || isStaffByFirestore(municipalityId);
+    }
+
+    // O paciente só acessa a própria pasta (o ID da pasta é o UID dele).
+    // Não consulta o Firestore, para o envio funcionar mesmo sem a integração Storage↔Firestore.
+    function isPatientOf(patientId) {
+      return signedIn() && request.auth.uid == patientId;
+    }
+
+    function validDocument() {
+      return request.resource.size > 0
+        && request.resource.size < 10 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf');
+    }
+
+    match /municipalities/{municipalityId}/patients/{patientId}/requests/{requestId}/{fileName} {
+      allow read: if isPatientOf(patientId) || isStaffOf(municipalityId);
+      // Arquivos enviados não são sobrescritos nem apagados (rastreabilidade).
+      allow create: if isPatientOf(patientId) && validDocument();
+      allow update, delete: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

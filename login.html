@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Solicite e acompanhe exames, consultas e cirurgias pelo celular.">
+    <meta name="theme-color" content="#176b5b">
+    <title>Entrar · Saúde Municipal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/logo/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Saúde">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell app-shell--no-nav">
+    <header class="app-header">
+        <a class="icon-btn" href="index.html" aria-label="Voltar"><span data-icon="chevronLeft"></span></a>
+    </header>
+    <main class="auth-page">
+        <h1>Entrar</h1>
+        <p class="lead">Use seu CPF ou e-mail cadastrado.</p>
+        <form id="login-form" novalidate>
+            <div class="field">
+                <label for="identifier">CPF ou e-mail</label>
+                <input id="identifier" name="identifier" class="input" autocomplete="username" autocapitalize="off" spellcheck="false" required>
+            </div>
+            <div class="field">
+                <label for="password">Senha</label>
+                <div class="password-field">
+                    <input id="password" name="password" type="password" class="input" autocomplete="current-password" required>
+                    <button type="button" class="icon-btn" data-toggle-password="password" aria-label="Mostrar senha"></button>
+                </div>
+            </div>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+            <button id="login-submit" type="submit" class="btn btn-primary">Entrar</button>
+        </form>
+        <div class="auth-links">
+            <a href="recuperar-senha.html">Esqueci minha senha</a>
+            <p>Ainda não tenho cadastro</p>
+            <a href="cadastro.html">Criar conta</a>
+        </div>
+    </main>
+</div>
+<script type="module" src="js/public/login.js"></script>
+</body>
+</html>

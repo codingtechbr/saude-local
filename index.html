@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Solicite e acompanhe exames, consultas e cirurgias pelo celular.">
+    <meta name="theme-color" content="#176b5b">
+    <title>Saúde Municipal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/logo/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Saúde">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell app-shell--no-nav">
+    <main class="landing">
+        <section class="landing__hero">
+            <img class="landing__logo" src="assets/logo/logo.svg" alt="" width="96" height="96">
+            <h1 class="landing__title">Saúde Municipal</h1>
+            <p class="landing__subtitle">Acompanhe seus exames, consultas e procedimentos.</p>
+        </section>
+
+        <div class="landing__actions">
+            <a class="btn btn-primary" href="login.html">Entrar</a>
+            <a class="btn btn-secondary" href="cadastro.html">Criar conta</a>
+        </div>
+
+        <div class="info-list">
+            <details>
+                <summary>Como funciona</summary>
+                <div class="info-body">
+                    <ol>
+                        <li>Crie sua conta com CPF e e-mail.</li>
+                        <li>Escolha o exame, consulta ou cirurgia.</li>
+                        <li>Fotografe o pedido médico e seus documentos.</li>
+                        <li>Receba o número de protocolo e acompanhe cada etapa.</li>
+                        <li>Seja avisado quando o atendimento for agendado.</li>
+                    </ol>
+                </div>
+            </details>
+            <details id="units-details">
+                <summary>Unidades</summary>
+                <div class="info-body"><ul id="units-list"><li>Carregando...</li></ul></div>
+            </details>
+            <details>
+                <summary>Privacidade</summary>
+                <div class="info-body">
+                    <p>Seus dados são usados apenas pela Secretaria Municipal de Saúde, conforme a LGPD. Somente você e servidores autorizados do município acessam suas solicitações e documentos.</p>
+                </div>
+            </details>
+            <details>
+                <summary>Ajuda</summary>
+                <div class="info-body">
+                    <p>Dúvidas sobre o aplicativo? Procure a unidade de saúde mais próxima ou a Secretaria Municipal de Saúde.</p>
+                    <p><strong>Emergência: ligue 192 (SAMU).</strong> Este aplicativo não atende urgências.</p>
+                </div>
+            </details>
+        </div>
+        <p class="staff-link"><a href="admin/login.html">Acesso da Secretaria</a></p>
+    </main>
+</div>
+<script type="module" src="js/public/landing.js"></script>
+</body>
+</html>

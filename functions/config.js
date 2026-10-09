@@ -1,0 +1,20 @@
+// Configuração central das Cloud Functions.
+
+// IMPORTANTE: use a MESMA região do banco Firestore (Console > Firestore > aba "Dados", local do banco)
+// e a mesma constante FUNCTIONS_REGION de js/firebase-config.js.
+//  - Banco em "southamerica-east1" (São Paulo) -> "southamerica-east1"
+//  - Banco em "nam5" (Estados Unidos)          -> "us-central1"
+// Gatilhos do Firestore falham no deploy se a região não for compatível com o banco.
+const REGION = "southamerica-east1";
+
+const TIMEZONE = "America/Sao_Paulo";
+
+// Modelos da Groq em ordem de preferência. Se um for desativado ou não estiver
+// liberado para a sua conta, a função tenta o próximo automaticamente.
+const GROQ_MODELS = ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "openai/gpt-oss-20b", "llama-3.1-8b-instant"];
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+// Endereço público do app (usado no link das notificações push).
+const APP_URL = "https://chamados-hopital.web.app";
+
+module.exports = { REGION, TIMEZONE, GROQ_MODELS, GROQ_URL, APP_URL };

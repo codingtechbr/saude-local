@@ -1,0 +1,235 @@
+body {
+    margin: 0;
+    background: var(--page-backdrop);
+    color: var(--text-primary);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Container mobile: o app ocupa no máximo 480px, centralizado. */
+.app-shell {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 auto;
+    background: var(--background);
+    padding-bottom: calc(var(--nav-height) + 24px + env(safe-area-inset-bottom));
+    position: relative;
+}
+
+.app-shell--no-nav {
+    padding-bottom: 24px;
+}
+
+h1, h2, h3 {
+    line-height: 1.25;
+    color: var(--text-primary);
+}
+
+h1 { font-size: 24px; }
+h2 { font-size: 18px; }
+h3 { font-size: 16px; }
+
+p + p {
+    margin-top: 10px;
+}
+
+a {
+    color: var(--primary);
+}
+
+small {
+    font-size: 13px;
+}
+
+code {
+    background: var(--surface-muted);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.skip-link {
+    position: absolute;
+    left: 8px;
+    top: -60px;
+    z-index: 1000;
+    padding: 10px 14px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+}
+
+.skip-link:focus {
+    top: 8px;
+}
+
+/* ---------- Formulários ---------- */
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.field label,
+.label {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.field-row {
+    display: flex;
+    gap: 12px;
+}
+
+.field-row > .field {
+    flex: 1;
+    min-width: 0;
+}
+
+.field-row > .field--sm {
+    flex: 0 0 84px;
+}
+
+.input {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 12px;
+    background: var(--surface);
+    font-size: 16px; /* 16px evita zoom automático no iPhone */
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+textarea.input {
+    min-height: 96px;
+    resize: vertical;
+}
+
+select.input {
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%235c6663' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--focus-ring);
+}
+
+.input[aria-invalid="true"] {
+    border-color: var(--danger);
+}
+
+.input--color {
+    padding: 6px;
+    height: 52px;
+}
+
+.field-error {
+    color: var(--danger);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-error {
+    margin: 12px 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.hint {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field .input {
+    padding-right: 52px;
+}
+
+.password-field .icon-btn {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.checkbox,
+.radio {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.checkbox input,
+.radio input {
+    width: 22px;
+    height: 22px;
+    margin: 1px 0 0;
+    flex-shrink: 0;
+    accent-color: var(--primary);
+}
+
+.checkbox-group,
+.radio-group {
+    margin-bottom: 12px;
+}
+
+.checkbox-group legend,
+.radio-group legend {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+/* ---------- Utilitários ---------- */
+
+.text-center { text-align: center; }
+.text-secondary { color: var(--text-secondary); }
+.text-danger { color: var(--danger); }
+.text-success { color: var(--success); }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-16 { margin-bottom: 16px; }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Solicite e acompanhe exames, consultas e cirurgias pelo celular.">
+    <meta name="theme-color" content="#176b5b">
+    <title>Recuperar senha · Saúde Municipal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/logo/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Saúde">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell app-shell--no-nav">
+    <header class="app-header">
+        <a class="icon-btn" href="login.html" aria-label="Voltar"><span data-icon="chevronLeft"></span></a>
+    </header>
+    <main class="auth-page">
+        <form id="recover-form" novalidate>
+            <h1>Recuperar senha</h1>
+            <p class="lead">Informe seu e-mail ou CPF. Enviaremos um link para criar uma nova senha.</p>
+            <div class="field"><label for="identifier">E-mail ou CPF</label>
+                <input id="identifier" name="identifier" class="input" autocomplete="username" autocapitalize="off" required></div>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+            <button id="recover-submit" type="submit" class="btn btn-primary">Enviar link</button>
+        </form>
+        <div id="recover-success" class="success-box" hidden>
+            <div class="state__icon"><span data-icon="check" data-size="28"></span></div>
+            <h1>Verifique seu e-mail</h1>
+            <p class="lead">Se houver uma conta com esses dados, você receberá um link para criar uma nova senha. Confira também a caixa de spam.</p>
+            <a class="btn btn-primary" href="login.html">Voltar para entrar</a>
+        </div>
+    </main>
+</div>
+<script type="module" src="js/public/recover.js"></script>
+</body>
+</html>

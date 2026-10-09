@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Saúde Municipal">
+  <rect width="96" height="96" rx="24" fill="#176b5b"/>
+  <path d="M38 18h20v20h20v20H58v20H38V58H18V38h20z" fill="#ffffff"/>
+  <path d="M30 50h9l5-9 8 17 5-8h9" fill="none" stroke="#176b5b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

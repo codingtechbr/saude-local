@@ -1,0 +1,350 @@
+rules_version = '2';
+
+// Regras de segurança do Cloud Firestore - Saúde Municipal
+//
+// Princípios:
+//  - Paciente só acessa dados vinculados ao próprio UID (patientUid / userId).
+//  - Servidor só acessa dados do município ao qual está vinculado (municipalityId).
+//  - O perfil (role) vem de users/{uid} e não pode ser alterado pelo próprio usuário.
+//  - Tudo que não estiver liberado explicitamente é negado.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* ---------- Funções auxiliares ---------- */
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function hasProfile() {
+      return signedIn() && exists(userPath(request.auth.uid));
+    }
+
+    function me() {
+      return get(userPath(request.auth.uid)).data;
+    }
+
+    function staffRoles() {
+      return ['ATTENDANT', 'REGULATOR', 'MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+    }
+
+    function isStaff() {
+      return hasProfile() && me().active == true && me().role in staffRoles();
+    }
+
+    function isPatient() {
+      return hasProfile() && me().active == true && me().role == 'PATIENT';
+    }
+
+    function inMunicipality(municipalityId) {
+      return me().municipalityId == municipalityId || me().role == 'SUPER_ADMIN';
+    }
+
+    function staffOf(municipalityId) {
+      return isStaff() && inMunicipality(municipalityId);
+    }
+
+    function roleOf(municipalityId, roles) {
+      return isStaff() && me().role in roles && inMunicipality(municipalityId);
+    }
+
+    function isUser(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function sameMunicipality() {
+      return incoming().municipalityId == existing().municipalityId;
+    }
+
+    function catalogRoles() {
+      return ['MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+    }
+
+    function adminRoles() {
+      return ['ADMIN', 'SUPER_ADMIN'];
+    }
+
+    function regulationRoles() {
+      return ['REGULATOR', 'MANAGER', 'ADMIN', 'SUPER_ADMIN'];
+    }
+
+    /* ---------- Municípios ---------- */
+
+    match /municipalities/{municipalityId} {
+      allow read: if signedIn();
+      allow create, update: if roleOf(municipalityId, adminRoles());
+      allow delete: if false;
+    }
+
+    /* ---------- Usuários (perfil e papel) ---------- */
+
+    match /users/{uid} {
+      allow read: if isUser(uid) || staffOf(existing().municipalityId);
+
+      // 1) Autocadastro do paciente (somente como PATIENT, patientId = uid).
+      // 2) Administrador cria servidores do próprio município.
+      allow create: if (isUser(uid)
+            && incoming().role == 'PATIENT'
+            && incoming().patientId == uid
+            && incoming().active == true
+            && incoming().municipalityId is string
+            && incoming().keys().hasOnly(['municipalityId', 'patientId', 'role', 'email', 'name', 'active', 'createdAt', 'updatedAt']))
+        || (roleOf(incoming().municipalityId, adminRoles())
+            && incoming().role in ['ATTENDANT', 'REGULATOR', 'MANAGER', 'ADMIN']);
+
+      // O próprio usuário só pode registrar tokens de notificação.
+      // Administrador altera servidores do município (nunca a si mesmo nem para SUPER_ADMIN).
+      allow update: if (isUser(uid) && changedKeys().hasOnly(['fcmTokens', 'updatedAt']))
+        || (roleOf(existing().municipalityId, adminRoles())
+            && !isUser(uid)
+            && existing().role in staffRoles()
+            && existing().role != 'SUPER_ADMIN'
+            && incoming().role in ['ATTENDANT', 'REGULATOR', 'MANAGER', 'ADMIN']
+            && sameMunicipality());
+
+      allow delete: if false;
+    }
+
+    /* ---------- Índice de CPF (garante CPF único) ---------- */
+
+    match /cpfIndex/{cpf} {
+      allow read: if isStaff();
+      allow create: if signedIn()
+        && cpf.size() == 11
+        && incoming().uid == request.auth.uid
+        && incoming().keys().hasOnly(['uid', 'municipalityId', 'createdAt']);
+      allow update, delete: if false;
+    }
+
+    /* ---------- Pacientes ---------- */
+
+    match /patients/{patientId} {
+      allow read: if isUser(patientId) || staffOf(existing().municipalityId);
+
+      // Criado no mesmo lote que users/{uid} e cpfIndex/{cpf}.
+      allow create: if isUser(patientId)
+        && incoming().authUid == request.auth.uid
+        && incoming().status == 'ACTIVE'
+        && incoming().cpf is string
+        && incoming().cpf.size() == 11
+        && existsAfter(/databases/$(database)/documents/cpfIndex/$(incoming().cpf))
+        && getAfter(/databases/$(database)/documents/cpfIndex/$(incoming().cpf)).data.uid == request.auth.uid
+        && getAfter(userPath(request.auth.uid)).data.municipalityId == incoming().municipalityId;
+
+      // Paciente altera apenas contato; servidor não altera município nem CPF.
+      allow update: if (isUser(patientId) && changedKeys().hasOnly(['phone', 'address', 'updatedAt']))
+        || (staffOf(existing().municipalityId)
+            && sameMunicipality()
+            && incoming().cpf == existing().cpf
+            && incoming().authUid == existing().authUid);
+
+      allow delete: if false;
+    }
+
+    /* ---------- Catálogo: procedimentos e base de conhecimento ---------- */
+
+    match /procedures/{procedureId} {
+      allow read: if signedIn();
+      allow create: if roleOf(incoming().municipalityId, catalogRoles());
+      allow update: if roleOf(existing().municipalityId, catalogRoles()) && sameMunicipality();
+      allow delete: if false;
+    }
+
+    // Unidades são informação pública (exibidas na tela inicial).
+    match /healthUnits/{unitId} {
+      allow read: if true;
+      allow create: if roleOf(incoming().municipalityId, catalogRoles());
+      allow update: if roleOf(existing().municipalityId, catalogRoles()) && sameMunicipality();
+      allow delete: if false;
+    }
+
+    match /knowledgeBase/{articleId} {
+      allow read: if signedIn();
+      allow create: if roleOf(incoming().municipalityId, catalogRoles());
+      allow update: if roleOf(existing().municipalityId, catalogRoles()) && sameMunicipality();
+      allow delete: if false;
+    }
+
+    /* ---------- Contador de protocolos ---------- */
+
+    match /counters/{counterId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && incoming().value == 1
+        && incoming().keys().hasOnly(['value', 'municipalityId', 'updatedAt']);
+      allow update: if signedIn()
+        && incoming().value == existing().value + 1
+        && changedKeys().hasOnly(['value', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    /* ---------- Solicitações ---------- */
+
+    match /requests/{requestId} {
+      function requestPath() {
+        return /databases/$(database)/documents/requests/$(requestId);
+      }
+      function parent() {
+        return get(requestPath()).data;
+      }
+      function parentAfter() {
+        return getAfter(requestPath()).data;
+      }
+
+      allow read: if (signedIn() && existing().patientUid == request.auth.uid)
+        || staffOf(existing().municipalityId);
+
+      // Paciente cria a própria solicitação. Prioridade e status iniciais são fixos.
+      allow create: if isPatient()
+        && incoming().patientUid == request.auth.uid
+        && incoming().patientId == request.auth.uid
+        && incoming().createdBy == request.auth.uid
+        && incoming().municipalityId == me().municipalityId
+        && incoming().status == 'DOCUMENT_REVIEW'
+        && incoming().priority == 'NORMAL'
+        && incoming().type in ['EXAM', 'CONSULTATION', 'SURGERY']
+        && incoming().protocol is string
+        && incoming().keys().hasOnly([
+          'municipalityId', 'patientId', 'patientUid', 'patientName', 'patientCpf',
+          'procedureId', 'procedureName', 'requiresRegulation', 'originUnitId', 'originUnitName',
+          'type', 'protocol', 'priority', 'status', 'notes',
+          'requestedAt', 'regulatedAt', 'scheduledAt', 'completedAt',
+          'createdBy', 'createdAt', 'updatedAt'
+        ]);
+
+      // Paciente: só reenviar documentos (DOCUMENT_PENDING -> DOCUMENT_REVIEW)
+      //           ou confirmar presença (SCHEDULED -> CONFIRMED).
+      // Servidor: altera solicitações do município; prioridade só pela regulação.
+      allow update: if (signedIn()
+            && existing().patientUid == request.auth.uid
+            && changedKeys().hasOnly(['status', 'updatedAt'])
+            && ((existing().status == 'DOCUMENT_PENDING' && incoming().status == 'DOCUMENT_REVIEW')
+              || (existing().status == 'SCHEDULED' && incoming().status == 'CONFIRMED')))
+        || (staffOf(existing().municipalityId)
+            && sameMunicipality()
+            && incoming().patientUid == existing().patientUid
+            && incoming().patientId == existing().patientId
+            && (!changedKeys().hasAny(['priority']) || roleOf(existing().municipalityId, regulationRoles())));
+
+      allow delete: if false;
+
+      match /history/{historyId} {
+        allow read: if signedIn()
+          && (parent().patientUid == request.auth.uid || staffOf(parent().municipalityId));
+
+        allow create: if signedIn()
+          && incoming().changedBy == request.auth.uid
+          && ((parentAfter().patientUid == request.auth.uid && incoming().newStatus == parentAfter().status)
+            || staffOf(parentAfter().municipalityId));
+
+        allow update, delete: if false;
+      }
+
+      match /documents/{documentId} {
+        allow read: if signedIn()
+          && (parent().patientUid == request.auth.uid || staffOf(parent().municipalityId));
+
+        allow create: if signedIn()
+          && ((parentAfter().patientUid == request.auth.uid
+                && incoming().uploadedBy == request.auth.uid
+                && incoming().status == 'PENDING'
+                && incoming().storagePath.matches('municipalities/' + parentAfter().municipalityId + '/patients/' + request.auth.uid + '/requests/' + requestId + '/.*'))
+            || staffOf(parentAfter().municipalityId));
+
+        // Somente o servidor analisa (aprova/recusa) documentos.
+        allow update: if staffOf(parent().municipalityId)
+          && changedKeys().hasOnly(['status', 'reviewedBy', 'reviewedByName', 'reviewedAt', 'reviewReason']);
+
+        allow delete: if false;
+      }
+    }
+
+    /* ---------- Filas ---------- */
+
+    match /queues/{queueId} {
+      // "resource == null" permite verificar se a fila já existe antes de criá-la.
+      allow get: if isStaff() && (resource == null || inMunicipality(existing().municipalityId));
+      allow list: if staffOf(existing().municipalityId);
+      allow create: if staffOf(incoming().municipalityId);
+      allow update: if staffOf(existing().municipalityId) && sameMunicipality();
+      allow delete: if false;
+
+      match /entries/{entryId} {
+        allow read: if staffOf(existing().municipalityId);
+        allow create: if staffOf(incoming().municipalityId);
+        allow update: if staffOf(existing().municipalityId) && sameMunicipality();
+        allow delete: if false;
+      }
+    }
+
+    /* ---------- Agendamentos ---------- */
+
+    match /appointments/{appointmentId} {
+      allow read: if (signedIn() && existing().patientUid == request.auth.uid)
+        || staffOf(existing().municipalityId);
+
+      allow create: if staffOf(incoming().municipalityId);
+
+      // Paciente: confirmar presença ou pedir reagendamento.
+      allow update: if (signedIn()
+            && existing().patientUid == request.auth.uid
+            && changedKeys().hasOnly(['patientConfirmed', 'status', 'rescheduleRequested', 'rescheduleRequestedAt', 'updatedAt'])
+            && (incoming().status == existing().status
+              || (existing().status == 'SCHEDULED' && incoming().status == 'CONFIRMED')))
+        || (staffOf(existing().municipalityId) && sameMunicipality());
+
+      allow delete: if false;
+    }
+
+    /* ---------- Avisos ---------- */
+
+    match /notifications/{notificationId} {
+      allow read: if (signedIn() && existing().userId == request.auth.uid)
+        || staffOf(existing().municipalityId);
+      allow create: if staffOf(incoming().municipalityId);
+      allow update: if signedIn()
+        && existing().userId == request.auth.uid
+        && changedKeys().hasOnly(['read', 'readAt']);
+      allow delete: if false;
+    }
+
+    /* ---------- Assistente de IA (escrita apenas pela Cloud Function) ---------- */
+
+    match /aiConversations/{conversationId} {
+      allow read: if signedIn() && existing().userId == request.auth.uid;
+      allow write: if false;
+
+      match /messages/{messageId} {
+        allow read: if signedIn()
+          && get(/databases/$(database)/documents/aiConversations/$(conversationId)).data.userId == request.auth.uid;
+        allow write: if false;
+      }
+    }
+
+    /* ---------- Auditoria (somente inclusão) ---------- */
+
+    match /auditLogs/{auditId} {
+      allow read: if roleOf(existing().municipalityId, catalogRoles());
+      allow create: if staffOf(incoming().municipalityId)
+        && incoming().userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}

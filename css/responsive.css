@@ -1,0 +1,128 @@
+/* Mobile-first: as regras base já são para 360-430px. Aqui ficam os ajustes. */
+
+/* Celulares pequenos (360px) */
+@media (max-width: 374px) {
+    .page-content {
+        padding: 16px 12px;
+    }
+
+    .quick-card {
+        min-height: 96px;
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .file-slot__actions {
+        grid-template-columns: 1fr;
+    }
+
+    .step-title {
+        font-size: 21px;
+    }
+}
+
+/* Tablet e desktop: o app do cidadão aparece como um "celular" centralizado. */
+@media (min-width: 481px) {
+    .app-shell {
+        box-shadow: 0 0 0 1px var(--border), var(--shadow-md);
+    }
+
+    .modal-overlay {
+        align-items: center;
+        padding: 24px;
+    }
+
+    .modal {
+        border-radius: var(--radius-large);
+        max-width: 520px;
+    }
+
+    .modal--wide {
+        max-width: 860px;
+    }
+}
+
+/* Painel: menu lateral vira gaveta em telas menores. */
+@media (max-width: 960px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 272px;
+        z-index: 200;
+        transform: translateX(-100%);
+        transition: transform 0.2s ease-out;
+    }
+
+    .sidebar.is-open {
+        transform: none;
+    }
+
+    .sidebar-backdrop.is-open {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 150;
+        background: rgba(0, 0, 0, 0.45);
+    }
+
+    .menu-btn {
+        display: inline-grid;
+    }
+
+    .admin-topbar {
+        padding: 10px 16px;
+    }
+
+    .admin-content {
+        padding: 16px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .kv {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+
+    .kv dd {
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .stat-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .stat-card__value {
+        font-size: 26px;
+    }
+
+    .panel {
+        padding: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

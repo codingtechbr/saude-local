@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Solicite e acompanhe exames, consultas e cirurgias pelo celular.">
+    <meta name="theme-color" content="#176b5b">
+    <title>Agendamentos · Saúde Municipal</title>
+    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" href="../assets/logo/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="../assets/icons/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Saúde">
+    <link rel="stylesheet" href="../css/variables.css">
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/app.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+    <header class="app-header">
+        <a class="icon-btn" href="home.html" id="back-button" aria-label="Voltar"><span data-icon="chevronLeft"></span></a>
+        <h1 class="app-header__title" id="page-title">Agendamentos</h1>
+        
+    </header>
+<main id="main" class="page-content" aria-live="polite"><div class="state state--loading" role="status"><span class="spinner" aria-hidden="true"></span><p>Carregando...</p></div></main>
+</div>
+<script type="module" src="../js/patient/appointments.js"></script>
+</body>
+</html>

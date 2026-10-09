@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="Solicite e acompanhe exames, consultas e cirurgias pelo celular.">
+    <meta name="theme-color" content="#176b5b">
+    <title>Criar conta · Saúde Municipal</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/logo/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Saúde">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell app-shell--no-nav">
+    <header class="app-header">
+        <a class="icon-btn" href="index.html" aria-label="Voltar"><span data-icon="chevronLeft"></span></a>
+        <p class="app-header__title">Criar conta</p>
+    </header>
+    <main class="auth-page">
+        <div class="wizard-progress">
+            <p class="wizard-progress__label" id="step-label">Etapa 1 de 2</p>
+            <div class="progress"><div class="progress__bar" id="register-progress"></div></div>
+        </div>
+        <form id="register-form" novalidate>
+            <section data-step="0">
+                <h1>Seus dados</h1>
+                <p class="lead">Use os mesmos dados do seu Cartão SUS.</p>
+                <div class="field"><label for="fullName">Nome completo</label>
+                    <input id="fullName" name="fullName" class="input" autocomplete="name" required></div>
+                <div class="field"><label for="cpf">CPF</label>
+                    <input id="cpf" name="cpf" class="input" inputmode="numeric" autocomplete="off" placeholder="000.000.000-00" required></div>
+                <div class="field"><label for="birthDate">Data de nascimento</label>
+                    <input id="birthDate" name="birthDate" type="date" class="input" autocomplete="bday" required></div>
+                <div class="field"><label for="cns">Cartão SUS (CNS) <span class="hint">- opcional</span></label>
+                    <input id="cns" name="cns" class="input" inputmode="numeric" placeholder="000 0000 0000 0000"></div>
+                <div class="field"><label for="motherName">Nome da mãe <span class="hint">- opcional</span></label>
+                    <input id="motherName" name="motherName" class="input"></div>
+                <div class="field"><label for="phone">Celular com DDD</label>
+                    <input id="phone" name="phone" class="input" inputmode="tel" autocomplete="tel" placeholder="(00) 00000-0000" required></div>
+                <div class="field"><label for="zipCode">CEP <span class="hint">- opcional</span></label>
+                    <input id="zipCode" name="zipCode" class="input" inputmode="numeric" autocomplete="postal-code"></div>
+                <div class="field"><label for="street">Endereço <span class="hint">- opcional</span></label>
+                    <input id="street" name="street" class="input" autocomplete="address-line1"></div>
+                <div class="field-row">
+                    <div class="field"><label for="number">Número</label><input id="number" name="number" class="input"></div>
+                    <div class="field"><label for="district">Bairro</label><input id="district" name="district" class="input"></div>
+                </div>
+                <div class="field-row">
+                    <div class="field"><label for="city">Cidade</label><input id="city" name="city" class="input" autocomplete="address-level2"></div>
+                    <div class="field field--sm"><label for="state">UF</label><input id="state" name="state" class="input" maxlength="2" autocomplete="address-level1"></div>
+                </div>
+                <div class="form-step-actions">
+                    <button type="button" class="btn btn-primary" id="next-step">Continuar</button>
+                </div>
+            </section>
+
+            <section data-step="1" hidden>
+                <h1>Dados de acesso</h1>
+                <p class="lead">Você vai usar o CPF ou o e-mail para entrar.</p>
+                <div class="field"><label for="email">E-mail</label>
+                    <input id="email" name="email" type="email" class="input" autocomplete="email" autocapitalize="off" required></div>
+                <div class="field"><label for="password">Senha</label>
+                    <div class="password-field">
+                        <input id="password" name="password" type="password" class="input" autocomplete="new-password" minlength="8" required>
+                        <button type="button" class="icon-btn" data-toggle-password="password" aria-label="Mostrar senha"></button>
+                    </div>
+                    <p class="hint">Mínimo de 8 caracteres.</p></div>
+                <div class="field"><label for="passwordConfirm">Confirme a senha</label>
+                    <input id="passwordConfirm" name="passwordConfirm" type="password" class="input" autocomplete="new-password" required></div>
+                <div class="field">
+                    <label class="checkbox"><input type="checkbox" id="terms" name="terms" required>
+                        <span>Autorizo a Secretaria Municipal de Saúde a usar meus dados para analisar e agendar minhas solicitações (LGPD).</span></label>
+                </div>
+                <p id="form-error" class="form-error" role="alert" hidden></p>
+                <div class="form-step-actions">
+                    <button type="submit" class="btn btn-primary" id="register-submit">Criar conta</button>
+                    <button type="button" class="btn btn-secondary" id="prev-step">Voltar</button>
+                </div>
+            </section>
+        </form>
+        <div class="auth-links"><p>Já tem conta?</p><a href="login.html">Entrar</a></div>
+    </main>
+</div>
+<script type="module" src="js/public/register.js"></script>
+</body>
+</html>

@@ -10,6 +10,9 @@ initializeApp();
 // Assistente de IA (Groq) - chamado pelo app do paciente.
 exports.assistantChat = require("./ai/chat").assistantChat;
 
+// Voz humanizada para as respostas do assistente (Google Cloud Text-to-Speech).
+exports.assistantSpeech = require("./ai/speech").assistantSpeech;
+
 // Login por CPF: descobre o e-mail vinculado ao CPF.
 exports.resolveLoginEmail = require("./auth/resolve-login").resolveLoginEmail;
 

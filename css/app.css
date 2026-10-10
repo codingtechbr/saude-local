@@ -1023,3 +1023,11 @@
     color: var(--primary);
     background: var(--primary-soft);
 }
+
+.spinner--xs {
+    width: 12px;
+    height: 12px;
+    border-width: 2px;
+    border-color: var(--primary-soft);
+    border-top-color: var(--primary);
+}

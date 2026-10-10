@@ -48,9 +48,10 @@ const recorder = new VoiceRecorder({
 
 /* ---------- Bolhas ---------- */
 
-function setSpeaking(button, speaking) {
+function setSpeaking(button, speaking, loading = false) {
     if (!button) return;
-    button.innerHTML = speaking ? `${icon("square", 14)} Parar` : `${icon("volume", 14)} Ouvir`;
+    button.innerHTML = loading ? `<span class="spinner spinner--xs" aria-hidden="true"></span> Preparando voz...`
+        : speaking ? `${icon("square", 14)} Parar` : `${icon("volume", 14)} Ouvir`;
     button.setAttribute("aria-label", speaking ? "Parar leitura" : "Ouvir resposta");
     button.classList.toggle("is-speaking", speaking);
 }
@@ -65,6 +66,7 @@ function speakFrom(button, text) {
     setSpeaking(speakingButton, false);
     speakingButton = button;
     speak(text, {
+        onLoading: () => setSpeaking(button, true, true),
         onStart: () => setSpeaking(button, true),
         onEnd: () => {
             setSpeaking(button, false);

@@ -6,6 +6,7 @@ const { defineSecret } = require("firebase-functions/params");
 const { logger } = require("firebase-functions");
 const { getFirestore, FieldValue, Timestamp } = require("firebase-admin/firestore");
 const { buildPatientContext } = require("./tools");
+const { transcribeAudio } = require("./transcribe");
 const { SYSTEM_PROMPT, buildContextMessage } = require("./prompts");
 const { GROQ_MODELS, GROQ_URL } = require("../config");
 
@@ -63,13 +64,17 @@ async function callGroq(apiKey, messages) {
     throw new HttpsError("unavailable", UNAVAILABLE_MESSAGE);
 }
 
-exports.assistantChat = onCall({ secrets: [GROQ_API_KEY], timeoutSeconds: 60, memory: "256MiB" }, async (request) => {
+exports.assistantChat = onCall({ secrets: [GROQ_API_KEY], timeoutSeconds: 90, memory: "512MiB" }, async (request) => {
     if (!request.auth) {
         throw new HttpsError("unauthenticated", "Entre na sua conta para usar o assistente.");
     }
 
     const uid = request.auth.uid;
-    const message = String(request.data?.message ?? "").trim();
+    const fromVoice = Boolean(request.data?.audio);
+    // Mensagem por voz: transcreve primeiro (o áudio não é armazenado).
+    const message = fromVoice
+        ? await transcribeAudio(GROQ_API_KEY.value(), request.data.audio, request.data.mimeType)
+        : String(request.data?.message ?? "").trim();
     if (!message) throw new HttpsError("invalid-argument", "Digite sua dúvida.");
     if (message.length > MAX_MESSAGE_LENGTH) throw new HttpsError("invalid-argument", "Mensagem muito longa. Resuma sua dúvida.");
 
@@ -107,10 +112,10 @@ exports.assistantChat = onCall({ secrets: [GROQ_API_KEY], timeoutSeconds: 60, me
 
     const now = Date.now();
     const batch = db.batch();
-    batch.set(conversationRef.collection("messages").doc(), { role: "user", content: message, createdAt: Timestamp.fromMillis(now) });
+    batch.set(conversationRef.collection("messages").doc(), { role: "user", content: message, via: fromVoice ? "voice" : "text", createdAt: Timestamp.fromMillis(now) });
     batch.set(conversationRef.collection("messages").doc(), { role: "assistant", content: reply, model, createdAt: Timestamp.fromMillis(now + 1) });
     batch.update(conversationRef, { updatedAt: FieldValue.serverTimestamp() });
     await batch.commit();
 
-    return { conversationId: conversationRef.id, reply };
+    return { conversationId: conversationRef.id, reply, transcript: fromVoice ? message : null };
 });

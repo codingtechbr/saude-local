@@ -14,7 +14,11 @@ const TIMEZONE = "America/Sao_Paulo";
 const GROQ_MODELS = ["openai/gpt-oss-120b", "llama-3.3-70b-versatile", "openai/gpt-oss-20b", "llama-3.1-8b-instant"];
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
+// Transcrição de voz (Whisper). Mesma lógica: tenta o próximo se um for desativado.
+const GROQ_TRANSCRIBE_URL = "https://api.groq.com/openai/v1/audio/transcriptions";
+const GROQ_WHISPER_MODELS = ["whisper-large-v3-turbo", "whisper-large-v3"];
+
 // Endereço público do app (usado no link das notificações push).
 const APP_URL = "https://chamados-hopital.web.app";
 
-module.exports = { REGION, TIMEZONE, GROQ_MODELS, GROQ_URL, APP_URL };
+module.exports = { REGION, TIMEZONE, GROQ_MODELS, GROQ_URL, GROQ_TRANSCRIBE_URL, GROQ_WHISPER_MODELS, APP_URL };

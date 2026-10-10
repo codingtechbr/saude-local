@@ -952,3 +952,74 @@
 .chat-send:disabled {
     opacity: 0.5;
 }
+
+/* ---------- Voz no assistente ---------- */
+
+.chat-mic {
+    background: var(--surface);
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.chat-mic.is-recording {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+.recording-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 6px 0 16px;
+    border-radius: 24px;
+    background: var(--danger-soft);
+    color: var(--danger);
+    font-size: 15px;
+}
+
+.recording-bar > span:nth-child(2) {
+    flex: 1;
+}
+
+.recording-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--danger);
+    animation: pulse 1s infinite;
+}
+
+.bubble__voice {
+    display: inline-flex;
+    vertical-align: -2px;
+    margin-right: 4px;
+    opacity: 0.85;
+}
+
+.bubble__speak {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 6px 12px;
+    border: 1.5px solid var(--primary);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.bubble__speak.is-speaking {
+    background: var(--primary);
+    color: #fff;
+}
+
+#auto-speak[aria-pressed="true"] {
+    color: var(--primary);
+    background: var(--primary-soft);
+}

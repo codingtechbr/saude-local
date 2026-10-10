@@ -24,13 +24,20 @@
     <header class="app-header">
         <a class="icon-btn" href="home.html" aria-label="Voltar"><span data-icon="chevronLeft"></span></a>
         <h1 class="app-header__title">Assistente da Saúde</h1>
+        <button type="button" class="icon-btn" id="auto-speak" aria-pressed="false" aria-label="Ligar leitura das respostas em voz alta"></button>
         <button type="button" class="btn btn-ghost btn-sm" id="new-chat">Nova conversa</button>
     </header>
-    <p class="chat-disclaimer">O assistente informa o andamento das suas solicitações. Ele não faz diagnósticos. Emergência: ligue 192.</p>
+    <p class="chat-disclaimer">Digite ou fale com o assistente. Ele informa o andamento das suas solicitações e não faz diagnósticos. Emergência: ligue 192.</p>
     <main id="messages" class="chat-messages" aria-live="polite"></main>
     <form id="chat-form" class="chat-input" autocomplete="off">
         <label for="chat-input" class="sr-only">Digite sua dúvida</label>
-        <input id="chat-input" class="input" placeholder="Digite sua dúvida..." maxlength="800" enterkeyhint="send">
+        <input id="chat-input" class="input" placeholder="Digite ou toque no microfone..." maxlength="800" enterkeyhint="send">
+        <div id="recording-bar" class="recording-bar" role="status" hidden>
+            <span class="recording-dot" aria-hidden="true"></span>
+            <span>Gravando <strong id="recording-time">0:00</strong></span>
+            <button type="button" class="icon-btn" id="recording-cancel" aria-label="Cancelar gravação"></button>
+        </div>
+        <button id="chat-mic" type="button" class="chat-send chat-mic" aria-label="Gravar mensagem de voz"></button>
         <button id="chat-send" type="submit" class="chat-send" aria-label="Enviar"></button>
     </form>
 </div>
